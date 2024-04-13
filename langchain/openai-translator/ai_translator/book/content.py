@@ -38,9 +38,24 @@ class Content:
 
 class TableContent(Content):
     def __init__(self, data, translation=None):
+
+        # 计算  data 中 每一个 元素的长度 并且获取最大长度
+        max_length=0   
+        for row in data:
+           if len(row)>max_length:
+               max_length=len(row)
+
+        print(f"max_length:{max_length}")
+        # 按照最大长度  把 data中不满足最大长度的  填补为 空字符串
+        
+        for row in data:
+            row.extend([''] * (max_length - len(row)))
+
+
         df = pd.DataFrame(data)
 
         # Verify if the number of rows and columns in the data and DataFrame object match
+        # 输出下列各项参数
         if len(data) != len(df) or len(data[0]) != len(df.columns):
             raise ValueError("The number of rows and columns in the extracted table data and DataFrame object do not match.")
         

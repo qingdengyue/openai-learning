@@ -14,8 +14,32 @@ class TranslationChain:
         
         # 翻译任务指令始终由 System 角色承担
         template = (
-            """You are a translation expert, proficient in various languages. \n
-            Translates {source_language} to {target_language}."""
+            """
+Project Background:
+
+We need to translate an article/novel/paper (specific content) about (theme/content). We would like the translator to maintain the original language style and the author's characteristics in the translation.
+
+Source Language: ({source_language})
+
+Target Language: ({target_language})
+
+Translation Style:
+
+We expect the translation to maintain a ({style}) style and to be as faithful as possible to the language atmosphere of the original text.
+
+Author Imitation:
+
+We would like the translator to imitate the style and expression of ({author}) in the translation. Please try to retain the emotional tone and language rhythm of the original text.
+
+Additional Requirements:
+
+The structure and content of the article/text should be retained from the original.
+Please pay attention to vocabulary choice and sentence structure to ensure smooth and natural translation.
+Please preserve the metaphors, similes, and rhetorical devices used in the original text as much as possible.
+Additional Information:
+
+(If there are specific terms, idioms, or cultural backgrounds that need explanation, please add instructions here)
+            """
         )
         system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 
@@ -33,13 +57,15 @@ class TranslationChain:
 
         self.chain = LLMChain(llm=chat, prompt=chat_prompt_template, verbose=verbose)
 
-    def run(self, text: str, source_language: str, target_language: str) -> (str, bool):
+    def run(self, text: str, source_language: str, target_language: str,style:str="unchanged",author:str="unchanged") -> (str, bool):
         result = ""
         try:
             result = self.chain.run({
                 "text": text,
                 "source_language": source_language,
                 "target_language": target_language,
+                "style":style,
+                "author":author
             })
         except Exception as e:
             LOG.error(f"An error occurred during translation: {e}")
